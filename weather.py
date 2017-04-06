@@ -6,7 +6,7 @@ import requests  # 导入requests模块
 from bs4 import BeautifulSoup  # 从bs4包中导入BeautifulSoup模块
 
 # get weather html and parse to json
-def get_weather(city_id):
+def get_weather1d(city_id):
 
     # 设置请求头
     # 更换一下爬虫的User-Agent，这是最常规的爬虫设置
@@ -31,8 +31,14 @@ def get_weather(city_id):
     # Soup对象可以方便和浏览器中检查元素看到的内容建立联系，下面会有动画演示
     # 使用css selector语法，获取白天和夜间温度，下面有动画演示
     city = soup.select('div.crumbs a')
-    city2 = soup.select('div.crumbs span')
+    city_sub = soup.select('div.crumbs span')
     tag_list = soup.select('p.tem span')
+
+    # url = "http://www.weather.com.cn/data/sk/" + city_id + ".html"
+    # stdout = urllib.request.urlopen(url)
+    # weatherInfomation = stdout.read().decode('utf-8')
+    # jsonDatas = json.loads(weatherInfomation)
+    # temp = jsonDatas["weatherinfo"]["temp"]
 
     # tag_list[0]是一个bs4.element.Tag对象
     # tag_list[0].text获得这个标签里的文本
@@ -43,13 +49,41 @@ def get_weather(city_id):
     for local in city:
         msg += local.text
         # print('{0} '.format(local.text), end='')
-    for local in city2:
+    for local in city_sub:
         if local.text != '>':
             msg += local.text
-    msg += '\\n'
-    # print()
+    msg += '\n'
+    # msg += '今日实时 {0}℃\n'.format(tem_cur[0].text)
     msg += '白天 {0}℃, 晚上 {1}℃'.format(day_temp, night_temp)
     # print('白天 {0}℃, 晚上 {1}℃'.format(day_temp, night_temp))
     # print(msg)
+
+    return msg
+
+
+def get_weather(city_id):
+    headers = {"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36'}
+    url = "http://www.weather.com.cn/weather/" + city_id + ".shtml"
+    web_data = requests.get(url, headers=headers)
+    web_data.encoding = 'utf-8'
+    content = web_data.text
+    soup = BeautifulSoup(content, 'lxml')
+
+    city = soup.select('div.crumbs a')
+    city2 = soup.select('div.crumbs span')
+    day_list = soup.select('p.tem span')
+    night_list = soup.select('p.tem i')
+
+    msg = ''
+    for local in city:
+        msg += local.text
+    for local in city2:
+        if local.text != '>':
+            msg += local.text
+    msg += '\n'
+    for i in range(0, 7):
+        day_temp = day_list[i].text
+        night_temp = night_list[i].text
+        msg += '{0} : 白天 {1}℃, 晚上 {2}\n'.format(i + 1, day_temp, night_temp)
 
     return msg
