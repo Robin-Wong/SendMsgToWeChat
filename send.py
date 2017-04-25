@@ -5,6 +5,7 @@ import json
 import time
 
 from weather import *
+from regex import *
 
 # richthofen
 # corp = {'CorpID': 'wx5268515d01bdd54b',
@@ -35,11 +36,15 @@ def send_msg(msg):
 
 
 if __name__ == '__main__':
-    weather_code = {'北京' : '101010100', '长春' : '101060101'}
-    msg = get_weather1d(weather_code['长春'])
-    print(msg)
-    msg = msg.replace('\n', '\\n')
-    msg = str(msg).encode('utf-8').decode('latin1')
+    re_test()
+    # get_weather1d('101060101')
+
+    # weather_code = {'北京' : '101010100', '长春' : '101060101'}
+    # msg = get_weather1d(weather_code['长春'])
+    # print(msg)
+    # msg = msg.replace('\n', '\\n')
+    # msg = str(msg).encode('utf-8').decode('latin1')
     # send_msg(msg)
+
     # data = str('中文测试\\n@').encode('utf-8').decode('latin1')
     # send_msg(data)
